@@ -9,7 +9,6 @@
   <title>Document</title>
 </head>
 <body>
-
   <div class="ui container">
     <br>
     <br>
@@ -22,7 +21,7 @@
       </div>
       <p></p>
     </div>
-    <div class="ui centered card" id="card">
+    <div class="ui centered card" id="card" >
       <div class="image">
         <img src="https://semantic-ui.com/images/avatar2/large/elyse.png">
       </div>
@@ -52,30 +51,52 @@
           <div class="content">
             <a class="header" id="username_info" href="#"></a>
             <div class="meta">
-              <b>Id</b> <span id="id_"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui card" id="users">
+          <br>
+          <h2 class="ui center aligned icon header">
+            <i class="circular users icon"></i>
+            Usuarios
+          </h2>
+          <div class="content">
+            <a class="header" id="username_info" href="#"></a>
+            <div class="meta">
+              <div class="ui feed" id="feed">
+                <div class="event">
+                  <div class="label">
+                    <img src="/images/avatar/small/elliot.jpg">
+                  </div>
+                  <div class="content">
+                    <div class="summary">
+                      <a class="user" id="btn-12">
+                        Elliot Fu
+                      </a> added you as a friend
+                      <div class="date">
+                        1 Hour Ago
+                      </div>
+                    </div>
+                    <div class="meta">
+                      <a class="like">
+                        <i class="like icon"></i> 4 Likes
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="eight wide">
-        <div class="ui segment" style="width:805px;">
-          <div class="ui centered huge header">
-            Chat
-          </div>
-          <div class="ui divider"></div>
-          <div class="ui comments" id="chat-box" style="height:400px; overflow-y:auto;">
-          </div>
-          <div class="ui divider"></div>
-          <div class="form_">
-            <div class="ui form">
-              <div class="field">
-                <textarea id="message"></textarea>
-              </div>
-              <button class="ui button" id="send">Enviarrrr</button>
-            </div>
-          </div>
+        <div class="chat-normal" id="chat-normal">
         </div>
       </div>
+    </div>
+
+    <div id="modals">
     </div>
   </div>
 
