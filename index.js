@@ -25,15 +25,6 @@ app.get('/gravatar', async (req, res) => {
   });
 });
 
-app.get('/private', async (req, res) => {
-  const username = req.query.u;
-
-
-  res
-    .json({
-      error: 'nNot Found!'
-    })
-});
 
 io.on('connection', (socket) => {
 
@@ -52,6 +43,10 @@ io.on('connection', (socket) => {
 
   socket.on('chat message', msg => {
     io.emit('chat message', msg);
+  });
+
+  socket.on('chat private', msg => {
+    socket.to(msg.id).emit('dm', msg);
   });
 
   socket.on('disconnect', reason => {

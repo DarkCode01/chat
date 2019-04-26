@@ -6,8 +6,6 @@ const client = io();
 
 client.on('connect', socket => {
   data.id = client.id;
-
-  client.emit('thing', data.id, 'asdasd');
 });
 
 client.on('joined users', users => {
@@ -50,20 +48,42 @@ client.on('chat message', msg => {
 
   // add appendChild
   gravatar.appendChild(image);
-
   content.appendChild(author);
   content.appendChild(text);
-
   item.appendChild(gravatar);
   item.appendChild(content);
-
   chat_box.appendChild(item);
 });
 
-client.on('me', msg => {
-  console.log(msg);
-})
+client.on('dm', msg => {
+  let notifications = document.getElementById('notifications');
 
+  let message = document.createElement('div');
+  let icon_x = document.createElement('i');
+  let icon_inbox = document.createElement('i');
+  let content = document.createElement('i');
+  let header = document.createElement('div');
+
+  message.className = 'ui icon floating message success';
+  icon_x.className = 'close icon';
+  icon_inbox.className = 'inbox icon';
+  content.className = 'content';
+  header.className = 'header';
+  icon_x.onclick = (event) => {
+    $('.message')
+      .transition('fade')
+      .remove()
+  }
+
+  header.append(`Tienes un nuevo mensaje de ${msg.from}`);
+  content.appendChild(header);
+  message.appendChild(icon_x);
+  message.appendChild(icon_inbox);
+  message.appendChild(content);
+  notifications.appendChild(message);
+
+  createPrivateMessage(msg);
+});
 
 button.addEventListener('click', async (event) => {
   const username = document.getElementById('username');
@@ -102,14 +122,29 @@ button.addEventListener('click', async (event) => {
 });
 
 function sendMessage(event) {
-  const message = document.getElementById('message').value;
+  if (event.target.id == 'send') {
+    const message = document.getElementById('message').value;
 
-  client.emit('chat message', {
-    gravatar: data.gravatar,
-    text: message,
-    id: data.id,
-    username: data.username
-  });
+    client.emit('chat message', {
+      gravatar: data.gravatar,
+      text: message,
+      id: data.id,
+      username: data.username
+    });
+  } else {
+    const message = document.getElementById(`message-${event.target.id}`).value;
+    const msg = {
+      id: event.target.value,
+      user: event.target.id,
+      from: data.username,
+      message: message,
+      gravatar: data.gravatar
+    }
+
+    client.emit('chat private', msg);
+
+    createPrivateMessage(msg, true);
+  }
 };
 
 
@@ -119,7 +154,39 @@ function _removeChild(node) {
   }
 }
 
-function createChat(private = false) {
+function createPrivateMessage(msg, sender = false) {
+  let chat_box = document.getElementById(sender ? `chat-${msg.user}` : `chat-${msg.from}`);
+  let item = document.createElement('div');
+  let gravatar = document.createElement('a');
+  let image = document.createElement('img');
+  let content = document.createElement('div');
+  let author = document.createElement('a');
+  let text = document.createElement('p');
+
+  // add className
+  item.className = ' item';
+  gravatar.className = 'ui tiny image';
+  content.className = 'content';
+  author.className = 'header';
+  text.className = 'description';
+
+  // set src
+  image.setAttribute('src', msg.gravatar);
+
+  // add text
+  author.innerHTML = msg.from;
+  text.innerHTML = msg.message;
+
+  // add appendChild
+  gravatar.appendChild(image);
+  content.appendChild(author);
+  content.appendChild(text);
+  item.appendChild(gravatar);
+  item.appendChild(content);
+  chat_box.appendChild(item);
+}
+
+function createChat(private = false, user = null, data = null) {
   let chat = document.createElement('div');
   let header = document.createElement('div');
   let divider = document.createElement('div');
@@ -146,6 +213,14 @@ function createChat(private = false) {
   button.className = 'ui button';
   button.setAttribute('id', private ? 'send_private' : 'send');
 
+  if (private) {
+    button.setAttribute('id', user);
+    button.value = data.id;
+    button.onclick = sendMessage;
+    messages.setAttribute('id', `chat-${user}`);
+    textarea.setAttribute('id', `message-${user}`);
+  }
+
   // add content
   button.append('Enviar Mensaje');
   header.append('Chat');
@@ -170,7 +245,7 @@ function createModal(user, data) {
   let description = document.createElement('div');
   let actions = document.createElement('div');
   let close = document.createElement('div');
-  let chat = createChat(true);
+  let chat = createChat(true, user, data);
 
   modal.className = `ui modal ${user}`;
   icon.className = 'close icon';
@@ -178,7 +253,6 @@ function createModal(user, data) {
   header.append(`Chat ${user}`);
   description.className = 'description';
   content.className = 'content';
-  content.append();
   actions.className = 'actions';
   close.className = 'ui black deny button';
   send.className = 'ui right labeled icon button';
